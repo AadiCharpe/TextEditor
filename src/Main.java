@@ -1,4 +1,8 @@
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.Timer;
@@ -44,12 +48,26 @@ class TextEditorFrame extends JFrame {
         text.setFont(new Font("Sanserif", fontType, font));
         add(new JScrollPane(text));
 
+        JPanel panel = new JPanel();
+        JTextField from = new JTextField(12);
+        JTextField to = new JTextField(12);
+        JButton replace = new JButton("Replace");
+        replace.addActionListener(e -> text.setText(text.getText().replaceFirst(from.getText(), to.getText())));
+        JButton replaceAll = new JButton("Replace All");
+        replaceAll.addActionListener(e -> text.setText(text.getText().replaceAll(from.getText(), to.getText())));
+        panel.add(replace);
+        panel.add(replaceAll);
+        panel.add(from);
+        panel.add(new JLabel("with"));
+        panel.add(to);
+        add(panel, "South");
+
         Timer saveTimer = new Timer(5000, e -> save(text.getText()));
 
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
-        JMenu file = new JMenu("File");
 
+        JMenu file = new JMenu("File");
         file.add("New").addActionListener(e -> {
             setTitle("Text Editor - New Unsaved File");
             openFile = null;
@@ -105,6 +123,7 @@ class TextEditorFrame extends JFrame {
         file.addSeparator();
         file.add("Exit").addActionListener(e -> System.exit(0));
         menuBar.add(file);
+
         JMenu edit = new JMenu("Edit");
         edit.add("Cut").addActionListener(e -> {
             copy(text.getSelectedText());
@@ -113,16 +132,27 @@ class TextEditorFrame extends JFrame {
         edit.add("Copy").addActionListener(e -> copy(text.getSelectedText()));
         edit.add("Paste").addActionListener(e -> text.replaceSelection(paste()));
         menuBar.add(edit);
+
         JMenu view = new JMenu("View");
         view.add("Font +").addActionListener(e -> text.setFont(new Font("Sanserif", fontType, ++font)));
         view.add("Font -").addActionListener(e -> text.setFont(new Font("Sanserif", fontType, --font)));
         view.addSeparator();
         JCheckBoxMenuItem bold = new JCheckBoxMenuItem("Bold");
+        JCheckBoxMenuItem italic = new JCheckBoxMenuItem("Italic");
         bold.addActionListener(e -> {
-            fontType = bold.isSelected() ? Font.BOLD : Font.PLAIN;
+            fontType = 0;
+            fontType += bold.isSelected() ? Font.BOLD : 0;
+            fontType += italic.isSelected() ? Font.ITALIC : 0;
             text.setFont(new Font("Sanserif", fontType, font));
         });
         view.add(bold);
+        italic.addActionListener(e -> {
+            fontType = 0;
+            fontType += bold.isSelected() ? Font.BOLD : 0;
+            fontType += italic.isSelected() ? Font.ITALIC : 0;
+            text.setFont(new Font("Sanserif", fontType, font));
+        });
+        view.add(italic);
         menuBar.add(view);
     }
     public void copy(String s) {
