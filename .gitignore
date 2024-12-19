@@ -7,11 +7,6 @@
 *.iml
 out/
 
-# Maven
-target/
-*.log
-*.class
-
 # OS-specific files
 .DS_Store
 Thumbs.db
